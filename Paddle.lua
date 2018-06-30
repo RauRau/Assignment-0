@@ -34,6 +34,13 @@ function Paddle:init(x, y, width, height)
     self.dy = 0
 end
 
+function Paddle:reset(x)
+    self.x = x
+    self.y = VIRTUAL_HEIGHT / 2 - 10
+    self.dx = 0
+    self.dy = 0
+end
+
 function Paddle:update(dt)
     -- math.max here ensures that we're the greater of 0 or the player's
     -- current calculated Y position when pressing up so that we don't

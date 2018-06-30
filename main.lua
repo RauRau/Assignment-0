@@ -88,10 +88,11 @@ function love.load()
         vsync = true
     })
 
-    -- initialize our player paddles; make them global so that they can be
-    -- detected by other functions and modules
-    player1 = Paddle(10, 30, 5, 20)
-    player2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
+	-- 2018/06/29 Edit by Qingying Fu - assignment 0
+	-- initialize the player paddles and the ball; make them to be in a horizontal line
+	
+    player1 = Paddle(10, VIRTUAL_HEIGHT / 2 - 10, 5, 20)
+    player2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT / 2 - 10, 5, 20)
 
     -- place a ball in the middle of the screen
     ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
@@ -144,6 +145,7 @@ function love.update(dt)
         else
             ball.dx = -math.random(140, 200)
         end
+		
     elseif gameState == 'play' then
         -- detect ball collision with paddles, reversing dx if true and
         -- slightly increasing it, then altering the dy based on the position
@@ -163,7 +165,7 @@ function love.update(dt)
         end
         if ball:collides(player2) then
             ball.dx = -ball.dx * 1.03
-            ball.x = player2.x - 4
+            ball.x = player2.x - 5
 
             -- keep velocity going in the same direction, but randomize it
             if ball.dy < 0 then
@@ -206,6 +208,8 @@ function love.update(dt)
                 gameState = 'serve'
                 -- places the ball in the middle of the screen, no velocity
                 ball:reset()
+				player1:reset(10)
+				player2:reset(VIRTUAL_WIDTH - 10)
             end
         end
 
@@ -225,39 +229,26 @@ function love.update(dt)
                 gameState = 'serve'
                 -- places the ball in the middle of the screen, no velocity
                 ball:reset()
+				player1:reset(10)
+				player2:reset(VIRTUAL_WIDTH - 10)
             end
         end
     end
 
-    --
-    -- paddles can move no matter what state we're in
-    --
-    -- player 1
-    if love.keyboard.isDown('w') then
-        player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        player1.dy = PADDLE_SPEED
-    else
-        player1.dy = 0
-    end
-
-    -- player 2
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
-    else
-        player2.dy = 0
-    end
+	
+	-- 2018/06/29 Edit by Qingying Fu - assignment 0
+	-- paddles will move together with the ball
+	player1.dy = ball.dy
+	player2.dy = ball.dy
 
     -- update our ball based on its DX and DY only if we're in play state;
     -- scale the velocity by dt so movement is framerate-independent
     if gameState == 'play' then
         ball:update(dt)
+		player1:update(dt)
+		player2:update(dt)
     end
 
-    player1:update(dt)
-    player2:update(dt)
 end
 
 --[[
@@ -284,6 +275,8 @@ function love.keypressed(key)
             gameState = 'serve'
 
             ball:reset()
+			player1:reset(10)
+			player2:reset(VIRTUAL_WIDTH - 10)
 
             -- reset scores to 0
             player1Score = 0
